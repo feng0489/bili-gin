@@ -14,12 +14,17 @@ func Index(c *gin.Context)  {
 }
 
 func TopNav(c *gin.Context)  {
-	db :=util.NewMysql()
+	db :=util.NewModel()
 	var all []entitys.TopNav
 	db.Find(&all)
+	db.Close()
 	c.JSON(200, gin.H{
 		"code":200,
 		"msg": "ok",
 		"data":all,
 	})
+}
+
+func HeadNav(c *gin.Context){
+
 }

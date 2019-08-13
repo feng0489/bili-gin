@@ -15,6 +15,7 @@ func Run(){
 
 
 	r.GET("/index", controllers.Index)
+	r.GET("/top", controllers.TopNav)
 
 
 
