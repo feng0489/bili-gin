@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<input type="text" id="input">
+<input type="hidden" id="line_id" value="2">
+<button class="el-button el-button--primary el-button--large" type="button" onclick="say()"><span>发送消息</span></button>
+</body>
+</html>
+
+<script>
+    var ws = new WebSocket("ws://localhost:6619/connet");
+    //连接打开时触发
+    ws.onopen = function(evt) {
+        console.log("Connection open ...");
+        ws.send("Hello WebSockets!");};
+    //接收到消息时触发
+    ws.onmessage = function(evt) {
+        console.log("Received Message: " + evt.data);};
+    //连接关闭时触发
+    ws.onclose = function(evt) {
+        console.log("Connection closed.");};
+
+
+    function say() {
+        let t = document.getElementById('input').value || '1111';
+        let line_id = document.getElementById('line_id').value || '1111';
+        if (!t) return;
+        var message = {};
+        message.id = line_id;
+        message.code = '200';
+        message.msg = t;
+        ws.send(JSON.stringify(message));
+    }
+
+</script>
