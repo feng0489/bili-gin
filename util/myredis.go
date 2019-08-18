@@ -42,6 +42,7 @@ func (r *MyRedisPool)RedisPollInit() bool {
 				log.Fatal(err)
 				return nil, err
 			}
+			//c.Send()
 
 			//_, err = c.Do("AUTH", "123456")
 			//if err != nil {

@@ -31,7 +31,7 @@ func Connet(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	defer ws.Close()
+	//defer ws.Close()
 	for {
 		//读取ws中的数据
 		mt, message, err := ws.ReadMessage()
