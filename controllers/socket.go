@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"encoding/json"
 	"github.com/gorilla/websocket"
+	"strconv"
 )
 
 var upGrader = websocket.Upgrader{
@@ -26,6 +27,7 @@ type SocketMessage struct {
 
 //webSocket请求ping 返回pong
 func Connet(c *gin.Context) {
+	ip := util.GetIP(c)
 	//升级get请求为webSocket协议
 	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
@@ -46,6 +48,20 @@ func Connet(c *gin.Context) {
 			message = []byte("pong")
 			//写入ws数据
 			err = ws.WriteMessage(mt, message)
+			if err != nil {
+				log.Println("send message error",err.Error())
+			}
+			break
+		}
+		if string(message) == "uuid" {
+			uuid := util.GetCashe(strconv.Itoa(util.StringIpToInt(ip)))
+			if uuid == nil{
+				uuid = util.GetUuid()
+				util.SetCashe(strconv.Itoa(util.StringIpToInt(ip)),uuid)
+			}
+
+			//写入ws数据
+			err = ws.WriteMessage(mt, []byte(uuid.(string)))
 			if err != nil {
 				log.Println("send message error",err.Error())
 			}

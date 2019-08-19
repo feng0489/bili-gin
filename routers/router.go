@@ -12,8 +12,7 @@ func Run(){
 
 	//gin初始化
 	r := gin.Default()
-
-
+	r.Use(controllers.CheckHttp())
 	r.GET("/index", controllers.Index)
 	r.GET("/top", controllers.TopNav)
 	r.GET("/connet", controllers.Connet)

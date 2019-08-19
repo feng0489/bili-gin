@@ -26,6 +26,8 @@ github.com/mattn/go-isatty
 github.com/modern-go/concurrent
 # github.com/modern-go/reflect2 v1.0.1
 github.com/modern-go/reflect2
+# github.com/satori/go.uuid v1.2.0
+github.com/satori/go.uuid
 # github.com/ugorji/go v1.1.4
 github.com/ugorji/go/codec
 # golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223
