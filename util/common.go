@@ -23,8 +23,12 @@ func JsonEncode(data interface{}) string {
 
 
 func GetIP(c *gin.Context) string{
-	ip:=strings.Split(c.Request.RemoteAddr, ":")
-	return ip[0]
+	ip := c.ClientIP()
+	if ip == ""{
+		ips:=strings.Split(c.Request.RemoteAddr, ":")
+		ip= ips[0]
+	}
+	return ip
 }
 
 

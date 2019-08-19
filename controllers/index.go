@@ -9,10 +9,13 @@ import (
 
 
 func Index(c *gin.Context)  {
-
+	val,_ := c.Cookie("sid")
+	c.SetCookie("sid", "asdasdasdasdqweqwe", 3600, "/index", c.ClientIP(), false, false)
 	c.JSON(200, gin.H{
-		"msg": "ok",
+		"msg": "ojbk",
 		"Ip":util.GetIP(c),
+		"cookie":val,
+		"ClientIP":c.ClientIP(),
 	})
 }
 

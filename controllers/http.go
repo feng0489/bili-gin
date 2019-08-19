@@ -8,11 +8,10 @@ import (
 func CheckHttp() gin.HandlerFunc{
 	return func(c *gin.Context){
 		fmt.Println("befor request>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
 		path :=c.Request.URL.Path
 		token:=c.Request.FormValue("api_token")
 		uuid:=c.Request.FormValue("uuid")
-
+        reqType :=c.Request.Header.Get("Upgrade")
 
 		if  checkoutToken(path) && token == ""{
 			c.JSON(404, gin.H{
@@ -26,6 +25,10 @@ func CheckHttp() gin.HandlerFunc{
 
 		if checkoutUuid(path) && uuid == "" {
 
+		}
+        if reqType == "websocket" {
+           socketKey :=c.Request.Header.Get("Sec-Websocket-Key")
+           c.SetCookie("sid", socketKey, 3600, "/", "localhost", false, false)
 		}
 
 		c.Next()
