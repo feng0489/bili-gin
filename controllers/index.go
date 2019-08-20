@@ -4,17 +4,26 @@ import (
 	"bili-gin/models"
 	"bili-gin/util"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"strconv"
+	"time"
 )
 
 
 
 func Index(c *gin.Context)  {
-	val,_ := c.Cookie("sid")
-	c.SetCookie("sid", "asdasdasdasdqweqwe", 3600, "/index", c.ClientIP(), false, false)
+	ip :=util.GetIP(c)
+	v :=strconv.FormatInt(time.Now().Unix(),10)
+	cookie := &http.Cookie{
+		Name:  "token",
+		Value:v,
+	}
+
+	http.SetCookie(c.Writer, cookie)
 	c.JSON(200, gin.H{
 		"msg": "ojbk",
-		"Ip":util.GetIP(c),
-		"cookie":val,
+		"Ip":ip,
+		"cookie":v,
 		"ClientIP":c.ClientIP(),
 	})
 }

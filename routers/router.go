@@ -16,7 +16,9 @@ func Run(){
 	r.GET("/index", controllers.Index)
 	r.GET("/top", controllers.TopNav)
 	r.GET("/connet", controllers.Connet)
-
+	r.GET("/ws", func(c *gin.Context) {
+		controllers.Wshandler(c.Writer, c.Request)
+	})
 
 
 

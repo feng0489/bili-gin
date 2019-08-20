@@ -12,21 +12,31 @@
 </html>
 
 <script>
-    var uuid =  uuid();
+    var uuid =  "";
     var ws = new WebSocket("ws://192.168.1.176:6619/connet");
     //连接打开时触发
     ws.onopen = function(evt) {
         console.log("Connection open ...");
-        ws.send("uuid");
+        var message = {};
+        message.msg_type = 1002;
+        ws.send(JSON.stringify(message));
     };
     //接收到消息时触发
     ws.onmessage = function(evt) {
         console.log("Received Message: " + evt.data);
+        let t = JSON.parse(evt.data);
+        console.log("msg_type",t.msg_type);
+        if( t.msg_type ===1002){
+            console.log("uuid",t.uuid);
+            uuid= t.uuid
+        }
     };
     //连接关闭时触发
     ws.onclose = function(evt) {
         console.log("Connection closed.");
     };
+
+
 
 
     function say() {
@@ -37,7 +47,6 @@
         message.msg_type = line_id;
         message.uuid =uuid;
         message.msg =t;
-        console.log(JSON.stringify(message))
         ws.send(JSON.stringify(message));
     }
 
