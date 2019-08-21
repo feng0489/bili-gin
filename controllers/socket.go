@@ -93,16 +93,7 @@ func Connet(c *gin.Context) {
 
 
 		if msg.MsgType == 1002 {
-			uuids := util.GetCashe(ip)
-
-			fmt.Println("cashe uuid:",uuids)
-			var uuid string
-			if uuids == nil{
-				uuid = util.GetUuid()
-				util.SetCashe(ip,uuid)
-			}else{
-				json.Unmarshal(uuids.([]byte), &uuid)
-			}
+			uuid := util.GetUuid(ip)
 
 			if uuid == ""{
 				msg.Code=102404
