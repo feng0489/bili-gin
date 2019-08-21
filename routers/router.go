@@ -14,11 +14,15 @@ func Run(){
 	r := gin.Default()
 	r.Use(controllers.CheckHttp())
 	r.GET("/index", controllers.Index)
+
+
 	r.GET("/top", controllers.TopNav)
+	r.GET("/head", controllers.HeadNav)
+
+
+
+	//socket
 	r.GET("/connet", controllers.Connet)
-	r.GET("/ws", func(c *gin.Context) {
-		controllers.Wshandler(c.Writer, c.Request)
-	})
 
 
 

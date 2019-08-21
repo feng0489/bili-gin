@@ -27,5 +27,10 @@ func TopNav(c *gin.Context)  {
 }
 
 func HeadNav(c *gin.Context){
+	c.JSON(200, gin.H{
+		"code":200,
+		"msg": "ok",
+		"data":models.HeadMenu(),
 
+	})
 }

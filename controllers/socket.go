@@ -3,7 +3,6 @@ package controllers
 import (
 	"bili-gin/util"
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"log"
@@ -16,14 +15,6 @@ var upGrader = websocket.Upgrader{
 	},
 }
 
-
-var wsupgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin: func (r *http.Request) bool {
-		return true
-	},
-}
 
 type SocketMessage struct {
 	MsgType int64 `json:"msg_type"`
@@ -130,22 +121,3 @@ func Connet(c *gin.Context) {
 	}
 }
 
-func Wshandler(w http.ResponseWriter, r *http.Request)  {
-	conn, err := wsupgrader.Upgrade(w, r, nil)
-
-	if err != nil {
-		fmt.Println("Failed to set websocket upgrade: %+v", err)
-		return
-	}
-
-	for {
-		t, msg, err := conn.ReadMessage()
-
-		log.Println("socket connet id:",t)
-		if err != nil {
-			break
-		}
-
-		conn.WriteMessage(t, msg)
-	}
-}

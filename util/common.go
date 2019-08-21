@@ -48,7 +48,7 @@ func GetUuid(ip string) string {
 		 nowtime :=time.Now().Unix()
 		if uuids != nil{
 			json.Unmarshal(uuids.([]byte), &info)
-			if nowtime - info.CreateTime > 100{
+			if nowtime - info.CreateTime > 144000{
 				info.Uuid = fmt.Sprintf("%v",uuid.NewV4())
 				info.CreateTime = time.Now().Unix()
 				SetCashe(fmt.Sprintf("%v_uuid",ip),info)
