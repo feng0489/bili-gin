@@ -32,7 +32,6 @@ func CheckHttp() gin.HandlerFunc{
 			return
 		}
 
-
 		uid := util.GetUuid(ip)
 
 		if checkoutUuid(path) && uuid == "" {
