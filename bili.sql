@@ -11,7 +11,7 @@
  Target Server Version : 50560
  File Encoding         : 65001
 
- Date: 22/08/2019 17:58:42
+ Date: 23/08/2019 16:34:42
 */
 
 SET NAMES utf8mb4;
@@ -58,7 +58,8 @@ CREATE TABLE `bili_carousel_nav`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '轮播类型',
   `name` varchar(40) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '名称',
   `tab` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '标识',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `nav_tab`(`tab`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
@@ -135,5 +136,28 @@ INSERT INTO `bili_top_nav` VALUES (3, '游戏中心', 'game', '');
 INSERT INTO `bili_top_nav` VALUES (4, '直播', 'direct', '');
 INSERT INTO `bili_top_nav` VALUES (5, '漫画', 'cartoon', '');
 INSERT INTO `bili_top_nav` VALUES (6, 'app下载', 'app/download', '');
+
+-- ----------------------------
+-- Table structure for bili_users
+-- ----------------------------
+DROP TABLE IF EXISTS `bili_users`;
+CREATE TABLE `bili_users`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户表',
+  `username` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '用户名',
+  `nickname` varchar(40) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '昵称',
+  `phone` char(15) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '手机号码',
+  `head_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '头像',
+  `b_coin` int(11) NOT NULL DEFAULT 0 COMMENT 'b币',
+  `user_tab` int(11) NULL DEFAULT 0 COMMENT '作品数量',
+  `channel` int(11) NULL DEFAULT 0 COMMENT '频道数量',
+  `store_up` int(11) NULL DEFAULT 0 COMMENT '收藏数量',
+  `focus` int(11) NULL DEFAULT 0 COMMENT '关注数量',
+  `follower` int(11) NULL DEFAULT 0 COMMENT '粉丝数量',
+  `create_time` int(11) NULL DEFAULT 0 COMMENT '注册时间',
+  `last_time` int(11) NULL DEFAULT 0 COMMENT '最后登录时间',
+  `last_ip` int(11) NULL DEFAULT 0 COMMENT '最后登录ip',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `username`(`username`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -21,6 +21,12 @@ func CheckHttp() gin.HandlerFunc{
 		path :=c.Request.URL.Path
 		uuid:=c.Request.FormValue("uuid")
 
+
+		if path== "/favicon.ico" {
+			c.Abort()
+			return
+		}
+
 		token:=c.Request.FormValue("api_token")
 		if  isCheckToken(path) && token == ""{
 			c.JSON(504, gin.H{

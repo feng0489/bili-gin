@@ -15,10 +15,13 @@ func Run(){
 	r.Use(controllers.CheckHttp())
 	r.GET("/index", controllers.Index)
 
-
+    //nav
 	r.GET("/top", controllers.TopNav)
 	r.GET("/head", controllers.HeadNav)
 
+
+	//carousel
+	r.GET("/tab",controllers.CarTab)
 
 
 	//socket

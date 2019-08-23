@@ -7,6 +7,10 @@ type CarouselNav struct {
 	Tab string `json:"tab" gorm:"column:tab"`
 }
 
+func (t CarouselNav) TableName() string {
+	return "bili_carousel_nav"
+}
+
 type Carousel struct {
 	Id int64 `json:"id" gorm:"column:id"`
 	Title string `json:"title" gorm:"column:title"`
@@ -16,4 +20,8 @@ type Carousel struct {
 	TabName string `json:"tab_name" gorm:"column:tab_name"`
 	Sort int64 `json:"sort" gorm:"column:sort"`
 	Opne int `json:"opne" gorm:"column:opne"`
+}
+
+func (t Carousel) TableName() string {
+	return "bili_carousel"
 }
