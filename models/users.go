@@ -19,8 +19,10 @@ func Register(user *entitys.User) int64 {
 
 }
 
-func FindUserById(id int64) (user *entitys.User) {
+func FindUserById(id int64)  *entitys.User {
 	db :=util.GetInstance().MyDB()
-	db.Select("id,username,nickname,phone,head_url,b_coin,user_tab,channel,store_up,focus,follower,create_time,last_time,last_ip").First(user,id)
-    return user
+	var user entitys.User
+	db.Select("id,username,nickname,phone,head_url,b_coin,user_tab,channel,store_up,focus,follower,create_time,last_time,last_ip").Where("id=?",id).First(&user)
+
+    return &user
 }

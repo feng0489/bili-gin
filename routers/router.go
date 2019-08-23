@@ -23,6 +23,9 @@ func Run(){
 	//carousel
 	r.GET("/tab",controllers.CarTab)
 
+	//users
+	r.GET("/user",controllers.FindUsers)
+
 
 	//socket
 	r.GET("/connet", controllers.Connet)

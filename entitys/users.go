@@ -1,7 +1,7 @@
 package entitys
 
 type User struct {
-	Id int64    `json:"id"  gorm:"column:id;primary_key"`
+	Id int64    `json:"id"  gorm:"column:primary_key"`
 	Username string `json:"user_name"  gorm:"column:username"`
 	Nickname string `json:"nick_name"  gorm:"column:nickname"`
 	Phone string `json:"phone"  gorm:"column:phone"`
@@ -17,3 +17,7 @@ type User struct {
 	LastIp int64 `json:"last_ip"  gorm:"column:last_ip"`//最后登录时间
 }
 
+
+func (t User) TableName() string {
+	return "bili_users"
+}
