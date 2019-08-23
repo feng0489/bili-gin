@@ -21,3 +21,10 @@ type User struct {
 func (t User) TableName() string {
 	return "bili_users"
 }
+
+
+type UserReg struct {
+	NickName string `form:"nick_name" json:"nick_name" xml:"nick_name"  binding:"required"`
+	Phone string `form:"phone" json:"phone" xml:"phone"  binding:"required"`
+	Password string `form:"pass" json:"pass" xml:"pass"  binding:"required"`
+}

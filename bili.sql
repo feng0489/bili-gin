@@ -158,7 +158,8 @@ CREATE TABLE `bili_users`  (
   `last_time` int(11) NULL DEFAULT 0 COMMENT '最后登录时间',
   `last_ip` int(11) NULL DEFAULT 0 COMMENT '最后登录ip',
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `username`(`username`) USING BTREE
+  key `username` (`username`),
+	key `nickname` (`nickname`)
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 SET FOREIGN_KEY_CHECKS = 1;

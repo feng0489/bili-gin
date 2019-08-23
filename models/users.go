@@ -19,6 +19,12 @@ func Register(user *entitys.User) int64 {
 
 }
 
+func CheckReg(re *entitys.UserReg) bool {
+	var ok bool=false
+	
+	return ok
+}
+
 func FindUserById(id int64)  *entitys.User {
 	db :=util.GetInstance().MyDB()
 	var user entitys.User

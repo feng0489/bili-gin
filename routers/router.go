@@ -25,7 +25,7 @@ func Run(){
 
 	//users
 	r.GET("/user",controllers.FindUsers)
-
+	r.POST("/reg",controllers.UserRegister)
 
 	//socket
 	r.GET("/connet", controllers.Connet)
