@@ -1,9 +1,10 @@
 package entitys
 
 type User struct {
-	Id int64    `json:"id"  gorm:"column:primary_key"`
+	Id int64    `json:"id"  gorm:"column:id"`
 	Username string `json:"user_name"  gorm:"column:username"`
 	Nickname string `json:"nick_name"  gorm:"column:nickname"`
+	Password string `json:"pass"  gorm:"column:password"`
 	Phone string `json:"phone"  gorm:"column:phone"`
 	HeadUrl string `json:"head_url"  gorm:"column:head_url"`
 	Bcoin int64 `json:"coin"  gorm:"column:b_coin"`   //b币
@@ -14,7 +15,7 @@ type User struct {
 	Follower int64 `json:"follower"  gorm:"column:follower"`//粉丝数量
 	CreateTime int64 `json:"create_time"  gorm:"column:create_time"`//注册时间
 	LastTime int64 `json:"last_time"  gorm:"column:last_time"`//最后登录时间
-	LastIp int64 `json:"last_ip"  gorm:"column:last_ip"`//最后登录时间
+	LastIp int `json:"last_ip"  gorm:"column:last_ip"`//最后登录时间
 }
 
 

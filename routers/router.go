@@ -24,8 +24,10 @@ func Run(){
 	r.GET("/tab",controllers.CarTab)
 
 	//users
-	r.GET("/user",controllers.FindUsers)
+	r.GET("/fnd",controllers.FindUsers)
 	r.POST("/reg",controllers.UserRegister)
+	r.POST("/cnick",controllers.CheckNickName)
+	r.POST("/cphone",controllers.CheckPhone)
 
 	//socket
 	r.GET("/connet", controllers.Connet)

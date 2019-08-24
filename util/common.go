@@ -2,11 +2,14 @@ package util
 
 import (
 	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/satori/go.uuid"
 	"log"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -135,4 +138,33 @@ func IpIntToString(ipInt int) string {
 		}
 	}
 	return buffer.String()
+}
+
+func CreateUserName(hpone string) string{
+	nameLast := hpone[len(hpone)-6:]
+    return fmt.Sprintf("%v%v",RandNum(1),nameLast)
+}
+
+func Md5(pass string) string{
+	h := md5.New()
+	h.Write([]byte(pass)) // 需要加密的字符串为 password
+	submit :=hex.EncodeToString(h.Sum(nil))
+	return submit
+}
+
+
+func RandNum(width int) string {
+	numeric := [10]byte{1,2,3,4,5,6,7,8,9}
+	r := len(numeric)
+	rand.Seed(time.Now().UnixNano())
+
+	var sb strings.Builder
+	for i := 0; i < width; i++ {
+		fmt.Fprintf(&sb, "%d", numeric[ rand.Intn(r) ])
+	}
+	return sb.String()
+}
+
+func GetToken(id int64)  {
+   /* ---- todo ----- */
 }
