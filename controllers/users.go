@@ -39,6 +39,7 @@ func UserRegister(c *gin.Context)  {
 	id:= models.Register(newUser)
 
 	if id > 0 {
+		util.SetCookie(c,"token",util.GetToken(c,id))
 		c.JSON(200, gin.H{
 			"msg": "ok",
 			"code":200,
@@ -126,11 +127,12 @@ func UserLogin(c *gin.Context)  {
 		})
 		return
 	}
-	submit := util.Md5(user.Password)
+	submit := util.Md5(pass)
 	if submit != user.Password{
 		c.JSON(200, gin.H{
 			"msg": "username or password error",
 			"code":12307,
+			"pass":submit,
 		})
 		return
 	}
@@ -138,14 +140,14 @@ func UserLogin(c *gin.Context)  {
         "last_time":time.Now().Unix(),
         "last_ip":util.StringIpToInt(util.GetIP(c)),
 	}
-
-	c.SetCookie("token", "Shimin Li", 30*1000, "/", "localhost", false, true)
-
+	token :=util.GetToken(c,user.Id)
+	util.SetCookie(c,"token",token)
 	models.UpUser(user.Id,Updata)
 
 	c.JSON(200, gin.H{
 		"msg": "msgok",
 		"code":200,
+		"token":token,
 		"data":map[string]interface{}{
 			"id":user.Id,
 			"nickname":user.Nickname,

@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 )
-
 func CheckHttp() gin.HandlerFunc{
 	return func(c *gin.Context){
 		fmt.Println("befor request>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 		w := c.Writer
+		r:=c.Request
 		// 处理js-ajax跨域问题
-		w.Header().Set("Access-Control-Allow-Origin", "*") //允许访问所有域
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 		w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
 		w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
 		w.Header().Add("Access-Control-Allow-Headers", "Access-Token")
@@ -27,23 +28,35 @@ func CheckHttp() gin.HandlerFunc{
 			return
 		}
 
-		token:=c.Request.FormValue("api_token")
-		if  isCheckToken(path) && token == ""{
+
+		if  isCheckToken(path) && util.GetCookie(c,"token") == ""{
 			c.JSON(504, gin.H{
 				"code":504,
-				"msg": "bad request",
-				//"url":c.Request.URL.Path,
+				"msg": "bad request did",
+				"url":c.Request.URL.Path,
 			})
 			c.Abort()
 			return
 		}
+
+		if  isCheckToken(path) && !util.CheckCookie(c,"token"){
+			c.JSON(504, gin.H{
+				"code":504,
+				"msg": "bad request done",
+				"url":c.Request.URL.Path,
+			})
+			c.Abort()
+			return
+		}
+
+
 
 		uid := util.GetUuid(ip)
 
 		if checkoutUuid(path) && uuid == "" {
 			c.JSON(504, gin.H{
 				"code":504,
-				"msg": "bad request",
+				"msg": "bad request path",
 				//"url":c.Request.URL.Path,
 			})
 			c.Abort()
@@ -52,7 +65,7 @@ func CheckHttp() gin.HandlerFunc{
 		if checkoutUuid(path) && uuid != uid {
 			c.JSON(505, gin.H{
 				"code":505,
-				"msg": "bad request",
+				"msg": "bad request got",
 				//"url":c.Request.URL.Path,
 			})
 			c.Abort()
@@ -69,7 +82,7 @@ func CheckHttp() gin.HandlerFunc{
  */
 func isCheckToken(url string) bool {
 
-	checkout := [4]string{"/userInfo"}
+	checkout := [4]string{"/userinfo"}
 	var check bool=false
 	for _,v:=range checkout{
 		if v==url{
@@ -92,18 +105,3 @@ func checkoutUuid(url string) bool {
 	return check
 }
 
-
-/**
- * 过滤不需要检验cookie的请求
- */
-
-func checkoutCookie(url string) bool {
-	checkout := [4]string{"/index","/top","/connet","/ws"}
-	var check bool=true
-	for _,v:=range checkout{
-		if v==url{
-			check=false
-		}
-	}
-	return check
-}

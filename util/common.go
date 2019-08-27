@@ -81,12 +81,12 @@ func SetCookie(c *gin.Context,key,value string)  {
 		MaxAge:1000*36,
 		HttpOnly:false,
 	}
-	SetCashe(fmt.Sprintf("%v_%v",GetIP(c),key),cookie)
-	http.SetCookie(c.Writer, cookie)
+	SetCashe(fmt.Sprintf("%v_%v",StringIpToInt(GetIP(c)),key),cookie)
+	c.SetCookie(key, value, 30*1000, "/", "localhost", false, true)
 }
 
 func GetCookie(c *gin.Context,key string)string{
-	cookie, err := c.Request.Cookie(fmt.Sprintf("%v_%v",GetIP(c),key))
+	cookie, err := c.Request.Cookie(fmt.Sprintf("%v_%v",StringIpToInt(GetIP(c)),key))
 	if err != nil {
 		return ""
 	}else{
@@ -97,7 +97,7 @@ func GetCookie(c *gin.Context,key string)string{
 func CheckCookie(c *gin.Context,key string) bool {
 	reqCookie :=GetCookie(c,key)
 	var casheCookie http.Cookie
-    casheCookies := GetCashe(fmt.Sprintf("%v_%v",GetIP(c),key))
+    casheCookies := GetCashe(fmt.Sprintf("%v_%v",StringIpToInt(GetIP(c)),key))
 	json.Unmarshal(casheCookies.([]byte), &casheCookie)
     if reqCookie == casheCookie.Value {
 		return true
@@ -165,6 +165,13 @@ func RandNum(width int) string {
 	return sb.String()
 }
 
-func GetToken(id int64)  {
-   /* ---- todo ----- */
+func GetToken(c *gin.Context,id int64) string {
+
+   one :=RandNum(6)
+   two := fmt.Sprintf("%v%v",RandNum(3),id)
+   tree := time.Now().Unix()
+   four := StringIpToInt(GetIP(c))
+
+	return fmt.Sprintf("%v_%v_%v_%v",one,two,tree,four)
+
 }
