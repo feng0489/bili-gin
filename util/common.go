@@ -107,6 +107,13 @@ func CheckCookie(c *gin.Context,key string) bool {
 	
 }
 
+func GetCacheToken(c *gin.Context,key string) string{
+	var casheCookie http.Cookie
+	casheCookies := GetCashe(fmt.Sprintf("%v_%v",StringIpToInt(GetIP(c)),key))
+	json.Unmarshal(casheCookies.([]byte), &casheCookie)
+	return casheCookie.Value
+}
+
 
 func StringIpToInt(ipstring string) int {
 	ipSegs := strings.Split(ipstring, ".")
@@ -165,8 +172,7 @@ func RandNum(width int) string {
 	return sb.String()
 }
 
-func GetToken(c *gin.Context,id int64) string {
-
+func CreateToken(c *gin.Context,id int64) string {
    one :=RandNum(6)
    two := fmt.Sprintf("%v%v",RandNum(3),id)
    tree := time.Now().Unix()

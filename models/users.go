@@ -66,8 +66,10 @@ func CheckPhone(phone string) bool{
 func FindUserById(id int64)  *entitys.User {
 	db :=util.GetInstance().MyDB()
 	var user entitys.User
-	db.Select("id,username,nickname,phone,head_url,b_coin,user_tab,channel,store_up,focus,follower,create_time,last_time,last_ip").Where("id=?",id).First(&user)
-
+	res :=db.Table(user.TableName()).Select("id,username,nickname,phone,head_url,b_coin,user_tab,channel,store_up,focus,follower,create_time,last_time,last_ip").Where("id=?",id).First(&user)
+    if res.Error != nil {
+    	log.Println("users=>models=>FindUserById:",res.Error.Error())
+	}
     return &user
 }
 

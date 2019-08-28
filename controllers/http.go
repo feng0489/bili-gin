@@ -21,6 +21,7 @@ func CheckHttp() gin.HandlerFunc{
 		ip :=util.GetIP(c)
 		path :=c.Request.URL.Path
 		uuid:=c.Request.FormValue("uuid")
+		token:=c.Request.FormValue("token")
 
 
 		if path== "/favicon.ico" {
@@ -29,7 +30,7 @@ func CheckHttp() gin.HandlerFunc{
 		}
 
 
-		if  isCheckToken(path) && util.GetCookie(c,"token") == ""{
+		if  isCheckToken(path) && token == ""{
 			c.JSON(504, gin.H{
 				"code":504,
 				"msg": "bad request did",
@@ -39,7 +40,7 @@ func CheckHttp() gin.HandlerFunc{
 			return
 		}
 
-		if  isCheckToken(path) && !util.CheckCookie(c,"token"){
+		if  isCheckToken(path) && util.GetCacheToken(c,"token") !=token {
 			c.JSON(504, gin.H{
 				"code":504,
 				"msg": "bad request done",

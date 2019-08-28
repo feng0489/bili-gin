@@ -39,7 +39,7 @@ func UserRegister(c *gin.Context)  {
 	id:= models.Register(newUser)
 
 	if id > 0 {
-		util.SetCookie(c,"token",util.GetToken(c,id))
+		util.SetCookie(c,"token",util.CreateToken(c,id))
 		c.JSON(200, gin.H{
 			"msg": "ok",
 			"code":200,
@@ -140,7 +140,7 @@ func UserLogin(c *gin.Context)  {
         "last_time":time.Now().Unix(),
         "last_ip":util.StringIpToInt(util.GetIP(c)),
 	}
-	token :=util.GetToken(c,user.Id)
+	token :=util.CreateToken(c,user.Id)
 	util.SetCookie(c,"token",token)
 	models.UpUser(user.Id,Updata)
 
@@ -160,12 +160,20 @@ func UserLogin(c *gin.Context)  {
 }
 
 func FindUsers(c *gin.Context)  {
-	ids:=c.Query("id")
-	id, err := strconv.ParseInt(ids, 10, 64)
+	ids:=c.Request.FormValue("id")
+	if ids == "" {
+		c.JSON(200, gin.H{
+			"msg": "msg error",
+			"code":12304,
+			"data":"",
+		})
+		return
+	}
+	id, err := strconv.ParseInt(ids,10,64)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"msg": err.Error(),
-			"code":12304,
+			"code":12305,
 			"data":"",
 		})
 		return
@@ -173,7 +181,7 @@ func FindUsers(c *gin.Context)  {
 	if id <=0 {
 		c.JSON(200, gin.H{
 			"msg": "msg error",
-			"code":12304,
+			"code":12306,
 			"data":"",
 		})
 		return
