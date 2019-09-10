@@ -29,6 +29,9 @@ func Run(){
 	r.POST("/cnick",controllers.CheckNickName)
 	r.POST("/cphone",controllers.CheckPhone)
 	r.POST("/login",controllers.UserLogin)
+	r.POST("/upload",controllers.UserLogin)
+
+
 
 
 	//socket

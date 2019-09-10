@@ -2,7 +2,6 @@ package util
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gomodule/redigo/redis"
 	"log"
 	"sync"
@@ -80,7 +79,6 @@ func SetCashe(key string,data interface{})(datas interface{},errors error){
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println("jsonBytes:\n",string(jsonBytes))
 	conn.Do("SET",key,string(jsonBytes))
 
 	return data,nil

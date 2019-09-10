@@ -4,10 +4,9 @@ import (
 	"bili-gin/entitys"
 	"bili-gin/models"
 	"bili-gin/util"
-	"github.com/gin-gonic/gin"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -39,7 +38,8 @@ func UserRegister(c *gin.Context)  {
 	id:= models.Register(newUser)
 
 	if id > 0 {
-		util.SetCookie(c,"token",util.CreateToken(c,id))
+		util.SetCookie(c,"token",util.CreateToken(c,id))//设置token缓存
+		util.SetUserCashe(c,id,newUser)//设置用户缓存
 		c.JSON(200, gin.H{
 			"msg": "ok",
 			"code":200,
@@ -136,12 +136,17 @@ func UserLogin(c *gin.Context)  {
 		})
 		return
 	}
+	nowTime := time.Now().Unix()
+	IpInfo := util.StringIpToInt(util.GetIP(c))
 	Updata :=map[string]interface{}{
-        "last_time":time.Now().Unix(),
-        "last_ip":util.StringIpToInt(util.GetIP(c)),
+        "last_time":nowTime,
+        "last_ip":IpInfo,
 	}
 	token :=util.CreateToken(c,user.Id)
 	util.SetCookie(c,"token",token)
+	user.LastTime = nowTime
+	user.LastIp = IpInfo
+	util.SetUserCashe(c,user.Id,user)//设置用户缓存
 	models.UpUser(user.Id,Updata)
 
 	c.JSON(200, gin.H{
@@ -159,25 +164,18 @@ func UserLogin(c *gin.Context)  {
 
 }
 
+func UserUploadVideo(c *gin.Context){
+	//file, err := c.FormFile("filename")
+	//ids:=c.Request.FormValue("id")
+	c.JSON(200, gin.H{
+		"msg": "msg error",
+		"code":12306,
+		"data":"",
+	})
+}
+
 func FindUsers(c *gin.Context)  {
-	ids:=c.Request.FormValue("id")
-	if ids == "" {
-		c.JSON(200, gin.H{
-			"msg": "msg error",
-			"code":12304,
-			"data":"",
-		})
-		return
-	}
-	id, err := strconv.ParseInt(ids,10,64)
-	if err != nil {
-		c.JSON(200, gin.H{
-			"msg": err.Error(),
-			"code":12305,
-			"data":"",
-		})
-		return
-	}
+	id := util.GetPostId(c)
 	if id <=0 {
 		c.JSON(200, gin.H{
 			"msg": "msg error",
@@ -186,8 +184,10 @@ func FindUsers(c *gin.Context)  {
 		})
 		return
 	}
-
-	user := models.FindUserById(id)
+	user :=new(entitys.User)
+	if user=util.GetUserCashe(c,id);user==nil{
+		user = models.FindUserById(id)
+	}
 
 	c.JSON(200, gin.H{
 		"msg": "msg ok",

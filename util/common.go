@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bili-gin/entitys"
 	"bytes"
 	"crypto/md5"
 	"encoding/hex"
@@ -38,6 +39,36 @@ func GetIP(c *gin.Context) string{
 		ip= ips[0]
 	}
 	return ip
+}
+
+func SetUserCashe(c *gin.Context,id int64,user *entitys.User) interface{} {
+	key := fmt.Sprintf("%v_user_%v",StringIpToInt(GetIP(c)),id)
+	u,_ := SetCashe(key,user)
+	return u
+}
+
+func GetUserCashe(c *gin.Context,id int64) (user *entitys.User) {
+	key := fmt.Sprintf("%v_user_%v",StringIpToInt(GetIP(c)),id)
+	users := GetCashe(key)
+	if users == nil {
+		return nil
+	}
+	json.Unmarshal(users.([]byte), user)
+	return user
+}
+
+func GetPostId(c *gin.Context)int64{
+	ids:=c.Request.FormValue("id")
+	if ids == "" {
+
+		return 0
+	}
+	id, err := strconv.ParseInt(ids,10,64)
+	if err != nil {
+		log.Println("GetPostId error:", err.Error())
+		return 0
+	}
+	return  id
 }
 
 
