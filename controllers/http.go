@@ -12,6 +12,8 @@ func CheckHttp() gin.HandlerFunc{
 	return func(c *gin.Context){
 		fmt.Println("befor request>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 		path :=c.Request.URL.Path
+		fmt.Println("path>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>:",path	)
+
 		token:=c.Request.FormValue("api_token")
 		uuid:=c.Request.FormValue("uuid")
         reqType :=c.Request.Header.Get("Upgrade")
@@ -67,17 +69,30 @@ func CheckHttp() gin.HandlerFunc{
 		}
 
 		uuids := util.GetCashe(ip)
-		var uid string
-		json.Unmarshal(uuids.([]byte), &uid)
-		if checkoutUuid(path) && uuids == uid {
+		if checkoutUuid(path) && uuids == nil{
 			c.JSON(504, gin.H{
 				"code":504,
-				"msg": "can't request with a error uuid",
+				"msg": "error uuid",
 				"url":c.Request.URL.Path,
 			})
 			c.Abort()
 			return
 		}
+
+		if checkoutUuid(path) && uuids != nil{
+			var uid string
+			json.Unmarshal(uuids.([]byte), &uid)
+			if checkoutUuid(path) && uuids == uid {
+				c.JSON(504, gin.H{
+					"code":504,
+					"msg": "can't request with a error uuid",
+					"url":c.Request.URL.Path,
+				})
+				c.Abort()
+				return
+			}
+		}
+
         if  reqType == "websocket" {
 			key :=c.Request.Header.Get("Sec-Websocket-Key")
 
@@ -98,7 +113,7 @@ func CheckHttp() gin.HandlerFunc{
  */
 func checkoutToken(url string) bool {
 
-	checkout := [4]string{"/index","/top","/connet","/ws"}
+	checkout := [5]string{"/index","/top","/connet","/ws","/allProject"}
 	var check bool=true
 	for _,v:=range checkout{
 		if v==url{
@@ -111,7 +126,7 @@ func checkoutToken(url string) bool {
  * 过滤不需要校验uuid的请求
  */
 func checkoutUuid(url string) bool {
-	checkout := [4]string{"/index","/top","/connet","/ws"}
+	checkout := [5]string{"/index","/top","/connet","/ws","/allProject"}
 	var check bool=true
 	for _,v:=range checkout{
 		if v==url{

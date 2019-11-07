@@ -38,7 +38,7 @@ func GetInstance() *MysqlConnectiPool {
 * @fuc 初始化数据库连接(可在mail()适当位置调用)
 */
 func (m *MysqlConnectiPool) InitDataPool() (issucc bool) {
-	db, err_db = gorm.Open("mysql", "root:root@tcp(127.0.0.1:3306)/bili?charset=utf8&parseTime=True&loc=Local")
+	db, err_db = gorm.Open("mysql", "root:root@tcp(127.0.0.1:3306)/outsite_gxxew?charset=utf8&parseTime=True&loc=Local")
 	db.LogMode(true)
 	db.DB().SetMaxIdleConns(10)
 	db.DB().SetMaxOpenConns(100)

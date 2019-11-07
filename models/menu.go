@@ -5,7 +5,7 @@ import (
 	"bili-gin/util"
 	"encoding/json"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
+		_ "github.com/go-sql-driver/mysql"
 )
 
 func TopMenu() *[]entitys.TopNav {

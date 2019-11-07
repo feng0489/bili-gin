@@ -33,7 +33,8 @@ func GetIP(c *gin.Context) string{
 
 
 func GetUuid() string {
-	id,_:= uuid.NewV4()
+	id:= uuid.NewV4()
+	log.Println(fmt.Sprintf("uuid:%v",id))
 	return fmt.Sprintf("%v",id)
 }
 
@@ -68,4 +69,9 @@ func IpIntToString(ipInt int) string {
 		}
 	}
 	return buffer.String()
+}
+
+func WriteCSV(data *[]map[string]interface{})bool{
+
+	return true
 }

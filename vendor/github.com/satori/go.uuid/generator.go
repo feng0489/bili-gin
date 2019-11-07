@@ -61,7 +61,7 @@ func NewV3(ns UUID, name string) UUID {
 }
 
 // NewV4 returns random generated UUID.
-func NewV4() (UUID,error) {
+func NewV4() UUID {
 	return global.NewV4()
 }
 
@@ -75,7 +75,7 @@ type Generator interface {
 	NewV1() UUID
 	NewV2(domain byte) UUID
 	NewV3(ns UUID, name string) UUID
-	NewV4() (UUID,error)
+	NewV4() UUID
 	NewV5(ns UUID, name string) UUID
 }
 
@@ -148,13 +148,13 @@ func (g *generator) NewV3(ns UUID, name string) UUID {
 }
 
 // NewV4 returns random generated UUID.
-func (g *generator) NewV4() (UUID,error) {
+func (g *generator) NewV4() UUID {
 	u := UUID{}
 	g.safeRandom(u[:])
 	u.SetVersion(V4)
 	u.SetVariant(VariantRFC4122)
 
-	return u,nil
+	return u
 }
 
 // NewV5 returns UUID based on SHA-1 hash of namespace UUID and name.
