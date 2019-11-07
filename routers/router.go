@@ -14,12 +14,33 @@ func Run(){
 	r := gin.Default()
 	r.Use(controllers.CheckHttp())
 	r.GET("/index", controllers.Index)
+
+    //nav
 	r.GET("/top", controllers.TopNav)
+	r.GET("/head", controllers.HeadNav)
+
+
+	//carousel
+	r.GET("/tab",controllers.CarTab)
+
+	//users
+	r.POST("/userinfo",controllers.FindUsers)
+	r.POST("/reg",controllers.UserRegister)
+	r.POST("/cnick",controllers.CheckNickName)
+	r.POST("/cphone",controllers.CheckPhone)
+	r.POST("/login",controllers.UserLogin)
+	r.POST("/upload",controllers.UserLogin)
+
+
+
+
+	//socket
 	r.GET("/connet", controllers.Connet)
 	r.GET("/allProject", controllers.AllProjeck)
 	r.GET("/ws", func(c *gin.Context) {
 		controllers.Wshandler(c.Writer, c.Request)
 	})
+
 
 //**********php 最低运行时间44秒
 
