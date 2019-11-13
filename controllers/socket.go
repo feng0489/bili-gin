@@ -98,7 +98,7 @@ func Connet(c *gin.Context) {
 			fmt.Println("cashe uuid:",uuids)
 			var uuid string
 			if uuids == nil{
-				uuid = util.GetUuid()
+				uuid = util.GetUuid(ip)
 				util.SetCashe(ip,uuid)
 			}else{
 				json.Unmarshal(uuids.([]byte), &uuid)

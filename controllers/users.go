@@ -29,7 +29,7 @@ func UserRegister(c *gin.Context)  {
 	newTime :=time.Now().Unix()
 
 
-	newUser := new(entitys.User)
+	newUser := new(entitys.Users)
 	newUser.Username =util.CreateUserName(user.Phone)
 	newUser.Phone = user.Phone
 	newUser.CreateTime = newTime
@@ -184,7 +184,7 @@ func FindUsers(c *gin.Context)  {
 		})
 		return
 	}
-	user :=new(entitys.User)
+	user :=new(entitys.Users)
 	if user=util.GetUserCashe(c,id);user==nil{
 		user = models.FindUserById(id)
 	}

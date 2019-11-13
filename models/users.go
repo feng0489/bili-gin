@@ -7,15 +7,15 @@ import (
 	"fmt"
 )
 
-func Register(user *entitys.User) int64 {
+func Register(Users *entitys.Users) int64 {
 
 	db :=util.GetInstance().MyDB()
-	res:=db.Create(user)
+	res:=db.Create(Users)
 	if res.Error != nil {
 		log.Println("insert users error:",res.Error.Error())
 		return 0
 	}else{
-		return user.Id
+		return Users.Id
 	}
 
 }
@@ -24,10 +24,10 @@ func CheckReg(re *entitys.UserReg) bool {
 	var ok bool=false
 	db :=util.GetInstance().MyDB()
 	var count entitys.Result
-    var user entitys.User
+    var Users entitys.Users
 	sql := fmt.Sprintf("select count(id) as total from bili_users where (nickname='%v') or (phone='%v') ",re.NickName,re.Phone)
 
-	db.Table(user.TableName()).Raw(sql).Select("total").Scan(&count)
+	db.Table(Users.TableName()).Raw(sql).Select("total").Scan(&count)
 	log.Println("conut result total:",count.Total)
 	if count.Total > 0{
 		ok= true
@@ -39,9 +39,9 @@ func CheckNickName(nick string) bool{
 	var ok bool=false
 	db :=util.GetInstance().MyDB()
 	var count entitys.Result
-	var user entitys.User
+	var Users entitys.Users
 	sql := fmt.Sprintf("select count(id) as total from bili_users where nickname='%v' ",nick)
-	db.Table(user.TableName()).Raw(sql).Select("total").Scan(&count)
+	db.Table(Users.TableName()).Raw(sql).Select("total").Scan(&count)
 	if count.Total > 0{
 		ok= true
 	}
@@ -53,9 +53,9 @@ func CheckPhone(phone string) bool{
 	var ok bool=false
 	db :=util.GetInstance().MyDB()
 	var count entitys.Result
-	var user entitys.User
+	var Users entitys.Users
 	sql := fmt.Sprintf("select count(id) as total from bili_users where phone='%v' ",phone)
-	db.Table(user.TableName()).Raw(sql).Select("total").Scan(&count)
+	db.Table(Users.TableName()).Raw(sql).Select("total").Scan(&count)
 	if count.Total > 0{
 		ok= true
 	}
@@ -63,33 +63,33 @@ func CheckPhone(phone string) bool{
 }
 
 
-func FindUserById(id int64)  *entitys.User {
+func FindUserById(id int64)  *entitys.Users {
 	db :=util.GetInstance().MyDB()
-	var user entitys.User
-	res :=db.Table(user.TableName()).Select("id,username,nickname,phone,head_url,b_coin,user_tab,channel,store_up,focus,follower,create_time,last_time,last_ip").Where("id=?",id).First(&user)
+	var Users entitys.Users
+	res :=db.Table(Users.TableName()).Select("id,username,nickname,phone,head_url,b_coin,user_tab,channel,store_up,focus,follower,create_time,last_time,last_ip").Where("id=?",id).First(&Users)
     if res.Error != nil {
     	log.Println("users=>models=>FindUserById:",res.Error.Error())
 	}
-    return &user
+    return &Users
 }
 
 
-func FindUserByPhone(phone string) *entitys.User {
+func FindUserByPhone(phone string) *entitys.Users {
 	db :=util.GetInstance().MyDB()
-	var user entitys.User
-	res := db.Select("id,password,username,nickname,phone,head_url,b_coin,user_tab,channel,store_up,focus,follower").Where("phone=?",phone).First(&user)
+	var Users entitys.Users
+	res := db.Select("id,password,username,nickname,phone,head_url,b_coin,user_tab,channel,store_up,focus,follower").Where("phone=?",phone).First(&Users)
 	if res.Error != nil {
 		log.Println("FindUserByPhone error :" ,res.Error.Error())
 		return  nil
 	}
-	return &user
+	return &Users
 }
 
 
 func UpUser(id int64,data map[string]interface{}) bool {
 	db :=util.GetInstance().MyDB()
-	var user entitys.User
-	res :=db.Table(user.TableName()).Where("id=?", id).Updates(data)
+	var Users entitys.Users
+	res :=db.Table(Users.TableName()).Where("id=?", id).Updates(data)
 	if res.Error != nil{
 		log.Println("UpUser",res.Error.Error())
 		return false

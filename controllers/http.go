@@ -14,6 +14,9 @@ func CheckHttp() gin.HandlerFunc{
 		path :=c.Request.URL.Path
 		fmt.Println("path>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>:",path	)
 
+		if path=="/favicon.ico" {
+			return
+		}
 		token:=c.Request.FormValue("api_token")
 		uuid:=c.Request.FormValue("uuid")
         reqType :=c.Request.Header.Get("Upgrade")

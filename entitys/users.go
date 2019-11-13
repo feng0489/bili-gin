@@ -1,6 +1,6 @@
 package entitys
 
-type User struct {
+type Users struct {
 	Id int64    `json:"id"  gorm:"column:id"`
 	Username string `json:"user_name"  gorm:"column:username"`
 	Nickname string `json:"nick_name"  gorm:"column:nickname"`
@@ -19,7 +19,7 @@ type User struct {
 }
 
 
-func (t User) TableName() string {
+func (t Users) TableName() string {
 	return "bili_users"
 }
 
