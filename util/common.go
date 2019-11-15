@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -211,4 +212,73 @@ func CreateToken(c *gin.Context,id int64) string {
 
 	return fmt.Sprintf("%v_%v_%v_%v",one,two,tree,four)
 
+}
+
+func DateStart(timestemp int64) (starTime int64,err error){
+	if timestemp ==0 {//填0获取当天的凌晨时间戳
+		timeStr := time.Now().Format("2006-01-02")
+
+		t, errs := time.ParseInLocation("2006-01-02", timeStr, time.Local)
+
+		starTime =  t.Unix()
+		return starTime ,errs
+	}else{
+		timeStr:=time.Unix(timestemp, 0).Format("2006-01-02")
+
+		t, errs := time.ParseInLocation("2006-01-02", timeStr, time.Local)
+
+		starTime =  t.Unix()
+		return starTime ,errs
+	}
+
+}
+
+func DateEnd(timestemp int64)(endTime int64,err error){
+	if timestemp ==0 {//填0获取当天的凌晨时间戳
+		timeStr := time.Now().Format("2006-01-02")
+		t, errs := time.ParseInLocation("2006-01-02 15:04:05", timeStr+" 23:59:59", time.Local)
+		endTime =  t.Unix()
+		return  endTime,errs
+
+	}else{
+		timeStr:=time.Unix(timestemp, 0).Format("2006-01-02")
+		t, errs := time.ParseInLocation("2006-01-02 15:04:05", timeStr+" 23:59:59", time.Local)//2006-01-02 15:04:05 go的诞生时间
+		endTime =  t.Unix()
+		return endTime,errs
+	}
+
+
+
+}
+
+func StempToTime(stmp int64)string{
+	return 	time.Unix(stmp, 0).Format("2006-01-02 15:04:05")
+}
+
+func WriteFile(path string,data [][]string)error{
+	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	for _,info:=range data{
+		str :=strings.Join(info,"|")
+		f.WriteString(str)
+		f.WriteString("\r\n")
+	}
+
+	return  nil
+}
+
+
+func PathExists(path string) bool {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true
+	}
+	if os.IsNotExist(err) {
+		return false
+	}
+	return false
 }
