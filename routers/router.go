@@ -32,11 +32,12 @@ func Run(){
 	r.POST("/upload",controllers.UserLogin)
 
 
-
+	r.GET("/allProject", controllers.AllProjeck)
+	r.GET("/userinfo", controllers.Userinfo)
 
 	//socket
 	r.GET("/connet", controllers.Connet)
-	r.GET("/allProject", controllers.AllProjeck)
+
 	r.GET("/ws", func(c *gin.Context) {
 		controllers.Wshandler(c.Writer, c.Request)
 	})

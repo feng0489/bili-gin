@@ -116,7 +116,7 @@ func CheckHttp() gin.HandlerFunc{
  */
 func checkoutToken(url string) bool {
 
-	checkout := [5]string{"/index","/top","/connet","/ws","/allProject"}
+	checkout := [6]string{"/index","/top","/connet","/ws","/allProject","/userinfo"}
 	var check bool=true
 	for _,v:=range checkout{
 		if v==url{
@@ -129,7 +129,7 @@ func checkoutToken(url string) bool {
  * 过滤不需要校验uuid的请求
  */
 func checkoutUuid(url string) bool {
-	checkout := [5]string{"/index","/top","/connet","/ws","/allProject"}
+	checkout := [6]string{"/index","/top","/connet","/ws","/allProject","/userinfo"}
 	var check bool=true
 	for _,v:=range checkout{
 		if v==url{

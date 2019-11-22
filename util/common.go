@@ -4,15 +4,18 @@ import (
 	"bili-gin/entitys"
 	"bytes"
 	"crypto/md5"
+	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/satori/go.uuid"
 	"log"
 	"fmt"
+	"math"
 	"math/rand"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -251,12 +254,23 @@ func DateEnd(timestemp int64)(endTime int64,err error){
 
 }
 
-func StempToTime(stmp int64)string{
-	return 	time.Unix(stmp, 0).Format("2006-01-02 15:04:05")
+func StempToTime(format string,stmp int64)string{
+	if len(format)>0{
+		return 	time.Unix(stmp, 0).Format(format)
+	}else{
+		return 	time.Unix(stmp, 0).Format("2006-01-02 15:04:05")
+	}
+
+}
+
+func TimeToStemp(str string)(stemp int64,err error){
+	t, errs := time.ParseInLocation("2006-01-02 15:04:05", str, time.Local)//2006-01-02 15:04:05 go的诞生时间
+	stemp =  t.Unix()
+	return stemp,errs
 }
 
 func WriteFile(path string,data [][]string)error{
-	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
+	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0777)//|os.O_APPEND 追加
 	if err != nil {
 		return err
 	}
@@ -271,6 +285,22 @@ func WriteFile(path string,data [][]string)error{
 	return  nil
 }
 
+func DirListFile(dirpath string) ([]string, error) {
+	var dir_list []string
+	dir_err := filepath.Walk(dirpath,
+		func(path string, f os.FileInfo, err error) error {
+			if f == nil {
+				return err
+			}
+			if !f.IsDir() {
+				dir_list = append(dir_list, path)
+			}
+			return nil
+		})
+	return dir_list, dir_err
+}
+
+
 
 func PathExists(path string) bool {
 	_, err := os.Stat(path)
@@ -281,4 +311,21 @@ func PathExists(path string) bool {
 		return false
 	}
 	return false
+}
+
+
+func B2S(bs []uint8) string {
+	ba := []byte{}
+	for _, b := range bs {
+		ba = append(ba, byte(b))
+		}
+
+	return  string(ba)
+}
+
+func Float64bytes(float float64) []byte {
+	bits := math.Float64bits(float)
+	bytes := make([]byte, 8)
+	binary.LittleEndian.PutUint64(bytes, bits)
+	return bytes
 }

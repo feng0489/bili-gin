@@ -5,7 +5,9 @@ import (
 	"bili-gin/util"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
 	"strconv"
+	"time"
 )
 
 const Shxydm  = "91450100092739725T"
@@ -16,7 +18,7 @@ func AllProjeck(c *gin.Context){
 	var deelsForTime []entitys.Deel
 	var allDeels []entitys.Deel
 
-	var data [][]string
+
 
 	db.Table(deel.TableName()).Select("repay_start_time ").Where("deal_status>=0 and publish_wait=0 and is_effect=1 and is_delete=0").Group("FROM_UNIXTIME(repay_start_time,'%Y-%m-%d')").Find(&deelsForTime)//按天分区
 	if len(deelsForTime) >0 {
@@ -35,6 +37,7 @@ func AllProjeck(c *gin.Context){
 
 			if len(allDeels)>0{
 
+				var data [][]string
 
 				//处理订单
 				for _,deel := range allDeels{
@@ -61,15 +64,43 @@ func AllProjeck(c *gin.Context){
 					*/
 					var repay entitys.DealRepay
 					db.Table(repay.TableName()).Select("repay_time").Where("deal_id=?",deel.Id).Order("id asc").Last(&repay)
-					info = append(info, fmt.Sprintf("%s%d",Shxydm,deel.Id),util.StempToTime(deel.RepayStartTime),Shxydm,strconv.FormatInt(deel.Id, 10),fmt.Sprintf("%.4f",deel.BorrowAmount),util.StempToTime(deel.RepayStartTime),util.StempToTime(repay.RepayTime),fmt.Sprintf("%.4f",deel.Rate*0.01),fmt.Sprintf("%.4f",deel.Rate*0.01*deel.BorrowAmount),fmt.Sprintf("%.4f",deel.GuarantorRealFreezenAmt),loanType(deel.Loantype),typeId(deel.TypeId),strconv.FormatInt(deel.BuyCount, 10),strconv.FormatInt(deel.RepayTime, 10))
+					info = append(info, fmt.Sprintf("%s%d",Shxydm,deel.Id),util.StempToTime("20060102",deel.RepayStartTime),Shxydm,strconv.FormatInt(deel.Id, 10),fmt.Sprintf("%.4f",deel.BorrowAmount),util.StempToTime("20060102",deel.RepayStartTime),util.StempToTime("20060102",repay.RepayTime),fmt.Sprintf("%.4f",deel.Rate*0.01),fmt.Sprintf("%.4f",deel.Rate*0.01*deel.BorrowAmount),fmt.Sprintf("%.4f",deel.GuarantorRealFreezenAmt),loanType(deel.Loantype),typeId(deel.TypeId),strconv.FormatInt(deel.BuyCount, 10),strconv.FormatInt(deel.RepayTime, 10))
 
 					data = append(data, info)
 				}
 
 				er :=util.WriteFile("data/24EXPORTBUSINESSZHAIQ.csv",data)
 				if er !=nil{
-					fmt.Println("写入文件异常：",er.Error())
+					fmt.Println("deal写入文件异常：",er.Error())
 				}
+
+
+				repayDate := allRepay(allDeels)
+
+				if repayDate != nil {
+					er :=util.WriteFile("data/24EXPORTBUSINESSZHAIQ_REPAY.csv",repayDate)
+					if er !=nil{
+						fmt.Println("repay写入文件异常：",er.Error())
+					}
+				}
+
+				userData := allUserInfo(allDeels)
+
+				if userData != nil {
+					er :=util.WriteFile("data/24EXPORTBUSINESSZHAIQ_BOR.csv",userData)
+					if er !=nil{
+						fmt.Println("user写入文件异常：",er.Error())
+					}
+				}
+
+				//bossData := allBossInfo(allDeels)
+				//
+				//if bossData != nil {
+				//	er :=util.WriteFile("data/24EXPORTBUSINESSZHAIQ_INV.csv",bossData)
+				//	if er !=nil{
+				//		fmt.Println("boss写入文件异常：",er.Error())
+				//	}
+				//}
 
 
 			}
@@ -80,10 +111,107 @@ func AllProjeck(c *gin.Context){
 	c.JSON(200, gin.H{
 		"code":200,
 		"msg": "ok",
-		"data":data,
+		"data":"",
 
 	})
 }
+
+func allRepay(deels []entitys.Deel) [][]string{
+	var data [][]string
+	db :=util.GetInstance().MyDB()
+	var repay  entitys.DealRepay
+	for _,deel := range deels{
+		moneyRate := deel.BorrowAmount * deel.Rate * 0.001/12 //每期利息
+		var repays []entitys.DealRepay
+		db.Table(repay.TableName()).Select("id,deal_id,repay_money,repay_time,l_key").Where("deal_id = ?",deel.Id).Find(&repays)
+		for _, rep :=range repays{
+			var info []string
+			times := rep.LKey+1
+			borrowAmount := "0.0000"
+			if times>=deel.RepayTime{
+				borrowAmount= fmt.Sprintf("%.4f",deel.BorrowAmount)
+			}
+			info = append(info,fmt.Sprintf("%s%d",Shxydm,deel.Id),util.StempToTime("20060102",deel.RepayStartTime),Shxydm,strconv.FormatInt(deel.Id, 10),strconv.FormatInt(deel.RepayTime, 10),util.StempToTime("20060102",rep.RepayTime),borrowAmount,fmt.Sprintf("%.4f",moneyRate))
+			data = append(data,info)
+		}
+
+	}
+
+	return data
+}
+
+func allUserInfo(deels []entitys.Deel) [][]string {
+	var data [][]string
+	db :=util.GetInstance().MyDB()
+	var user entitys.User
+	for _,deel:=range deels{
+		db.Table(user.TableName()).Where("id=?",deel.UserId).First(&user)
+		var sex string="02"
+		if user.Sex == 2{
+			sex="01"
+		}
+		var info []string
+		info = append(info,fmt.Sprintf("%s%d",Shxydm,deel.Id),util.StempToTime("20060102",deel.RepayStartTime),Shxydm,strconv.FormatInt(deel.Id, 10),"01",strconv.FormatInt(user.Id, 10),"01",user.Idno,sex,userJob(),predict(false))
+		data = append(data,info)
+	}
+
+	return data
+}
+
+func allBossInfo(deels []entitys.Deel)  [][]string{
+	var data [][]string
+	db :=util.GetInstance().MyDB()
+	var sdl entitys.DealLoad
+	var dls []entitys.DealLoad
+
+	for _,deel:=range deels{
+		db.Table(sdl.TableName()).Select("id,user_id,money").Where("deal_id=?",deel.Id).Find(&dls)
+		for _,dl:=range dls{
+			var user entitys.User
+			db.Table(user.TableName()).Select("idno").Where("id=?",dl.UserId).First(&user)
+			var info []string
+			info = append(info, fmt.Sprintf("%s%d",Shxydm,deel.Id),
+					util.StempToTime("20060102", deel.RepayStartTime),
+					Shxydm,
+					"01",
+					strconv.FormatInt(user.Id, 10),
+					"01",
+					user.Idno,
+					predict(true),
+					fmt.Sprintf("%.4f",dl.Money))
+			data = append(data,info)
+		}
+
+
+	}
+
+	return data
+}
+
+func Userinfo(c *gin.Context){
+
+	pathDir := "data/"
+	paths,err :=util.DirListFile(pathDir)
+	if err != nil {
+
+		c.JSON(200, gin.H{
+			"code":11,
+			"msg": err.Error(),
+			"data":paths,
+		})
+	}
+
+
+	c.JSON(200, gin.H{
+		"code":200,
+		"msg": "ok",
+		"data":paths,
+
+	})
+}
+
+
+
 
 func AllProjeckBytine(c *gin.Context)  {
 
@@ -141,7 +269,7 @@ func loanType(loantype int) string {
 		return "04"
 	}
 
-	info :=make(map[int]string,10)
+	info :=make(map[int]string,6)
 	info[0] = "01"//等额本息
 	info[1] = "04"//先息后本
 	info[2] = "05"//一次性还本付息
@@ -149,4 +277,97 @@ func loanType(loantype int) string {
 	info[4] = "02"//等额本金
 	info[5] = "06"//随时还款
 	return info[loantype]
+}
+
+func userJob() string{
+	info :=make(map[int]string,5)
+	info[0] = "10000"
+	info[1] = "10100"
+	info[2] = "10200"
+	info[3] = "10201"
+	info[4] = "80000"
+	return info[4]
+}
+
+
+//获取年平均收入，isBoss  true 出借人 false 为借款人
+func predict(isBoss bool)string{
+	start,err := util.TimeToStemp(time.Now().Format("2006")+"-01-01 00:00:00")
+	if err != nil{
+		fmt.Println("获取年平均工资开始时间异常",err)
+	}
+	end := time.Now().Unix()
+	db:= util.GetInstance().MyDB()
+	var deel entitys.Deel
+	var sum entitys.Result
+	var deals []entitys.Deel
+	var (
+		money float64
+		ok bool
+	)
+
+	swhere :="deal_status>=4 and success_time>=? and  success_time<=?"
+	if isBoss {
+		//sql := fmt.Sprintf("select sum(borrow_amount*rate*0.01) as allsum from nhyd_deal where deal_status>=4 and success_time>=%d and  success_time<=%d",start,end)
+		db.Table(deel.TableName()).Select("sum(borrow_amount*rate*0.01) as allsum ").Where(swhere,start,end).Scan(&sum)
+		allrate:= util.B2S(sum.Allsum)
+		price, _ := decimal.NewFromString(allrate)
+		//fee, _ := decimal.NewFromString("0.035")
+		fmt.Println("get the Total rate:",price) // price.Mul(fee)乘   price.Add(fee)加  price.Div(fee)除以 price.Sub(fee)减
+
+		//获取所有成功的订单id
+		db.Table(deel.TableName()).Select("id").Where(swhere,start,end).Find(&deals)
+		var idStr string=""
+		for _,d := range deals{
+			if idStr == ""{
+				idStr += strconv.FormatInt(d.Id, 10)
+			}else{
+				idStr += ","+strconv.FormatInt(d.Id, 10)
+			}
+		}
+
+		//获取投资人总数
+		var dl entitys.DealLoad
+		sql := fmt.Sprintf("SELECT COUNT(1) total FROM (select 1 from nhyd_deal_load where deal_id in (%v) GROUP BY user_id) a",idStr)
+		db.Table(dl.TableName()).Raw(sql).Select("total").Scan(&sum)
+		fmt.Println("totalUser:",sum.Total)
+		if sum.Total>0{
+			totalStr,_ := decimal.NewFromString(strconv.Itoa(sum.Total))
+			dmoney := price.Div(totalStr)
+			money,ok =dmoney.Float64()
+		}else{
+			money = 0
+		}
+
+		fmt.Println("dmoney:",money,ok)
+	}else{
+		//获取总的利息和平台服务费
+		//            $total_rate_money = M('Deal')->where($where)->sum('(borrow_amount*rate+borrow_amount*manage_fee)*0.01');
+		db.Table(deel.TableName()).Select("(borrow_amount*rate+borrow_amount*manage_fee)*0.01 as allsum").Where(swhere,start,end).Scan(&sum)
+		allrate:= util.B2S(sum.Allsum)
+		price, _ := decimal.NewFromString(allrate)
+		fmt.Println("get the Total rate:",price) // price.Mul(fee)乘   price.Add(fee)加  price.Div(fee)除以 price.Sub(fee)减
+		sql:= fmt.Sprintf("SELECT COUNT(1) total  FROM (select 1 from nhyd_deal where deal_status>=4 and success_time>=%d and  success_time<=%d GROUP BY user_id) a",start,end)
+		db.Table(deel.TableName()).Raw(sql).Select("total").Scan(&sum)
+		if sum.Total>0{
+			totalStr,_ := decimal.NewFromString(strconv.Itoa(sum.Total))
+			dmoney := price.Div(totalStr)
+			money,ok =dmoney.Float64()
+		}
+
+		fmt.Println("dmoney:",money,ok)
+	}
+	var res string="01"
+	switch {
+	case money <= 50000:
+		res="01"
+	case money <= 100000:
+		res="02"
+	case money <= 200000:
+		res="03"
+	case money > 200000:
+		res="04"
+	}
+
+	return res
 }

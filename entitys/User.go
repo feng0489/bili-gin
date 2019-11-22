@@ -182,7 +182,7 @@ type User struct {
 	SohuId               int64   `json:"sohu_id"  gorm:"column:sohu_id"`
 	BindVerify           string  `json:"bind_verify"  gorm:"column:bind_verify"`
 	VerifyCreateTime     int64   `json:"verify_create_time"  gorm:"column:verify_create_time"`
-	TencentId            int64   `json:"tencent_id"  gorm:"column:tencent_id"`
+	TencentId            string   `json:"tencent_id"  gorm:"column:tencent_id"`
 	Referer              string  `json:"referer"  gorm:"column:referer"`
 	LoginPayTime         int64   `json:"login_pay_time"  gorm:"column:login_pay_time"`
 	FocusCount           int     `json:"focus_count"  gorm:"column:focus_count"`

@@ -10,4 +10,5 @@ require (
 	github.com/jinzhu/gorm v1.9.10
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/satori/go.uuid v1.2.0
+	github.com/shopspring/decimal v0.0.0-20191009025716-f1972eb1d1f5
 )
